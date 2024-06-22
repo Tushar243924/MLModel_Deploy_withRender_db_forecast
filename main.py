@@ -49,7 +49,7 @@ def plot_volume(ids):
     fig, ax = plt.subplots()
 
     # df['volume'] = df['volume'].astype(int)
-
+    df['volume'] = df['volume'].astype(int)
     x = df[df["parts_id"] == 2674]['date']
 
     for id in ids:
