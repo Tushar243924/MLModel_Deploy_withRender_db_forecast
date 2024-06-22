@@ -1,0 +1,5 @@
+matplotlib==3.9.0
+pandas==2.2.2
+statsforecast==1.7.5
+streamlit==1.34.0
+supabase==2.5.1
