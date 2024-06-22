@@ -6,6 +6,8 @@ from statsforecast import StatsForecast
 from statsforecast.models import CrostonOptimized
 
 # Initialize connection to db
+
+
 @st.cache_resource
 def init_connection():
     url: str = st.secrets['supabase_url']
@@ -15,22 +17,16 @@ def init_connection():
 
     return client
 
-supabase = init_connection() 
 
-# Run the function to make the connection
+supabase = init_connection()
 
-# Function to query the db
-# Return all data
+# Query the db
 
 
-# @st.cache_data(ttl=600)  # cache clears after 10 minutes
-@st.cache_resource
+@st.cache_data(ttl=600)  # cache clears after 10 minutes
 def run_query():
-    return supabase.table("car_parts_monthly_sales").select("*").execute()
-
-# Function to create a Dataframe
-# Make sure that volume is an integer
-# Return dataframe
+    # Return all data
+    return supabase.table('car_parts_monthly_sales').select("*").execute()
 
 
 @st.cache_data(ttl=600)
@@ -40,16 +36,14 @@ def create_dataframe():
     df['volume'] = df['volume'].astype(int)
 
     return df
-     
-# Function to plot data
 
 
 @st.cache_data
 def plot_volume(ids):
     fig, ax = plt.subplots()
 
-    # df['volume'] = df['volume'].astype(int)
     df['volume'] = df['volume'].astype(int)
+
     x = df[df["parts_id"] == 2674]['date']
 
     for id in ids:
@@ -61,9 +55,6 @@ def plot_volume(ids):
 
     st.pyplot(fig)
 
-# Function to format the dataframe as expected
-# by statsforecast
-
 
 @st.cache_data
 def format_dataset(ids):
@@ -74,26 +65,19 @@ def format_dataset(ids):
 
     return model_df
 
-# Create the statsforecast object to train the model
-# Return the statsforecast object
-
 
 @st.cache_resource
 def create_sf_object(model_df):
     models = [CrostonOptimized()]
 
     sf = StatsForecast(
-        df = model_df,
-        models = models,
-        freq="MS",
+        df=model_df,
+        models=models,
+        freq='MS',
         n_jobs=-1
     )
-    
-    return sf
 
-# Function to make predictions
-# Inputs: product_ids and horizon
-# Returns a CSV
+    return sf
 
 
 @st.cache_data(show_spinner="Making predictions...")
@@ -127,10 +111,8 @@ if __name__ == "__main__":
 
             forecast_btn = st.button("Forecast", type="primary")
 
-            # Download CSV file if the forecast button is pressed
             if forecast_btn:
                 csv_file = make_predictions(product_ids, horizon)
-
                 st.download_button(
                     label="Download predictions",
                     data=csv_file,
